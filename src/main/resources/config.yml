@@ -1,0 +1,162 @@
+vip: # PERMISSÃO PARA TER DESCONTO: raplex.shop.vipdiscount
+  buypercent: 30 #30% de desconto na compra
+  sellpercent: 30 #30% a mais na venda
+messages:
+  main-title: "Loja"
+  category-title: "{category}"
+  confirm-sell-title: "Confirmar venda"
+  confirm-sell-lore:
+    - ""
+    - "&e* Informações"
+    - "&7Venda a unidade por: &e${sell}"
+    - ""
+    - "&e* Custo para &cVIPs"
+    - "&7Venda a unidade por: &e${sell-vip}"
+  confirm-buy-title: "Confirmar compra"
+  confirm-buy-lore:
+    - ""
+    - "&e* Informações"
+    - "&7Compre a unidade por: &e${buy}"
+    - ""
+    - "&e* Custo para &cVIPs"
+    - "&7Compre a unidade por: &e${buy-vip}"
+  cancel:
+    name: "&cCancelar"
+    lore:
+      - "&7Clique para cancelar"
+  confirm:
+    can-buy-color: '&a' # cor caso o cara tenha dinheiro para comprar
+    cant-buy-color: '&c' # caso não tenha
+    can-sell-color: '&a' # cor caso o cara tenha dinheiro para comprar
+    cant-sell-color: '&c' # caso não tenha
+    # O '&p' sera substituidp para "can-buy-color" caso ele tenha dinheiro para comprar
+    # se não tiver, sera o cant-buy-color
+    # e caso esteja vendendo, sera sell-color
+    buy:
+      1:
+        name: "&aComprar x1"
+        lore:
+          - "&7Clique para comprar uma"
+          - "&7unidade por &p${buy}"
+        lore-vip:
+          - "&7Clique para comprar uma"
+          - "&7unidade por &c&m${buy} &p${buy-vip}"
+          - "&e* Preço VIP"
+      64:
+        name: "&aComprar x64"
+        lore:
+          - "&7Clique para comprar 64"
+          - "&7unidades por &p${buy}"
+        lore-vip:
+          - "&7Clique para comprar 64"
+          - "&7unidades por &c&m${buy} &p${buy-vip}"
+          - "&e* Preço VIP"
+      2304:
+        name: "&aComprar x2304"
+        lore:
+          - "&7Clique para comprar 2304"
+          - "&7unidades por &p${buy}"
+        lore-vip:
+          - "&7Clique para comprar 2304"
+          - "&7unidade por &c&m${buy} &p${buy-vip}"
+          - "&e* Preço VIP"
+    sell:
+      1:
+        name: "&aVender x1"
+        lore:
+          - "&7Clique para vender uma"
+          - "&7unidade por &p${sell}"
+        lore-vip:
+          - "&7Clique para vender uma"
+          - "&7unidade por &c&m${sell} &p${sell-vip}"
+          - "&e* Preço VIP"
+      64:
+        name: "&aVender x64"
+        lore:
+          - "&7Clique para vender 64"
+          - "&7unidades por &p${sell}"
+        lore-vip:
+          - "&7Clique para vender 64"
+          - "&7unidades por &c&m${sell} &p${sell-vip}"
+          - "&e* Preço VIP"
+      2304:
+        name: "&aVender x2304"
+        lore:
+          - "&7Clique para vender 2304"
+          - "&7unidades por &p${sell}"
+        lore-vip:
+          - "&7Clique para vender 2304"
+          - "&7unidades por &c&m${sell} &p${sell-vip}"
+          - "&e* Preço VIP"
+  back-item-name: "&eVoltar"
+  no-money: "&cVocê não possúi saldo suficiente."
+  success-buy: "&aVocê comprou &2{amount}&a por &2${buy}&a com sucesso."
+  success-sell: "&aVocê vendeu &2{amount}&a por &2${sell}&a com sucesso."
+  no-space-buy: "&cVocê não possúi espaço no inventário."
+  no-items: "&cVocê não possui a quantidade necessária de items para vender."
+  cant-sell: "&cNão é possível vender este item."
+  error: "&cOcorreu um erro na transação. Contate um administrador ou tente novamente mais tarde."
+item-format:
+  name: "&6{name}" # nome da categoria
+  lore:
+    - " "
+    - "&7Botão esquerdo > Comprar"
+    - "&7Botão direito > Vender"
+    - ""
+    - "&e* Informações"
+    - "&7Compre a unidade por: &e${buy}"
+    - "&7Venda a unidade por: &e${sell}"
+    - ""
+    - "&e* Custo para &cVIPs"
+    - "&7Compre a unidade por: &e${buy-vip}"
+    - "&7Venda a unidade por: &e${sell-vip}"
+    - ""
+    - "&aClique para comprar/vender!"
+  lore-cant-sell:
+    - ""
+    - "&7Botão esquerdo > Comprar"
+    - ""
+    - "&e* Informações"
+    - "&7Compre a unidade por: &e${buy}"
+    - ""
+    - "&e* Custo para &cVIPs"
+    - "&7Compre a unidade por: &e${buy-vip}"
+    - ""
+    - "&aClique para comprar!"
+categories:
+  blocks:
+    name: "Blocos"
+    display-item: GRASS
+    # LISTA DE MATERIAIS: http://docs.codelanx.com/Bukkit/1.8/org/bukkit/Material.html
+    items:
+      0:
+        material: GRASS
+        sell: 80
+        buy: 100
+      1:
+        material: STONE
+        sell: 70
+        buy: 90
+      qualquercoisa:
+        material: STONE
+        data: 2
+        name: "&6granitao"
+        sell: 100
+        buy: 240
+      wat:
+        material: ICE
+        name: "&9água"
+        buy: 20
+        sell: 900
+      test:
+        material: STAINED_CLAY
+        data: 5
+        give-item: false # se for dar o item ou n
+        can-sell: false # se n poder vender
+        name: "&5Spawner de monstro"
+        buy: 20
+        sell: 200 # Se o item não tiver como vender, bote o sell ainda com qualquer valor p/ n bugar
+        console-commands:
+          - 'tellraw {player} {"text":"Spawner ae de {amount} mob pra tu {player}","color":"gold"}'
+        lore: # esse lore vai ser juntado antes do lore normal
+          - "&7Spawner de &ezumbi"

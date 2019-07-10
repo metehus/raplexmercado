@@ -1,0 +1,10 @@
+name: RaplexMercado
+version: 1.0-SNAPSHOT
+author: metehus
+main: raplexmarket.RaplexMarket
+depend: ['Vault']
+commands:
+  market:
+    description: Opens the shop menu.
+    usage: /market
+    aliases: ["mercado"]
