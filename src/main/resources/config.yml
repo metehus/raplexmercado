@@ -1,162 +1,205 @@
-vip: # PERMISSÃO PARA TER DESCONTO: raplex.shop.vipdiscount
-  buypercent: 30 #30% de desconto na compra
-  sellpercent: 30 #30% a mais na venda
-messages:
-  main-title: "Loja"
-  category-title: "{category}"
-  confirm-sell-title: "Confirmar venda"
-  confirm-sell-lore:
-    - ""
-    - "&e* Informações"
-    - "&7Venda a unidade por: &e${sell}"
-    - ""
-    - "&e* Custo para &cVIPs"
-    - "&7Venda a unidade por: &e${sell-vip}"
-  confirm-buy-title: "Confirmar compra"
-  confirm-buy-lore:
-    - ""
-    - "&e* Informações"
-    - "&7Compre a unidade por: &e${buy}"
-    - ""
-    - "&e* Custo para &cVIPs"
-    - "&7Compre a unidade por: &e${buy-vip}"
+expire_time: 720 #em minutos
+category-chest: misc # categoria onde vai ter os baús
+# maximo de itens a serem vendidos no total.
+# O máximo pode ser dado pela permissao: raplex.mercado.limit.*
+# Como por exeplo: raplex.mercado.limit.10 para limite de 10.
+# utlize limite 0 para desabilitar a venda para a pessoa.
+# (se nao tiver a permissao o limite será 0)
+max-sell-limit: 30
+debug-log: true
+
+broadcast-sell: # quando alguem vender algo sera anunciado no servidor
+  # player -> jogador q ta vendendo
+  # cat    -> nome da categoria (o nome da seção, não o "name")
+  # price  -> preço do item
+  # amount -> quantidade de itens do stack ou quantidade de itens do bau(caso seja bau) somando cada stack
+  chat:
+    enable: true # aparecer no chat
+    clickable: true # se ao clicar na msg ele abre o menu. Tambem ativa e hold-msg
+    hold-msg: "&eClique para comprar o item." # msg que aparece ao passar o mouse se "clickable" estiver habilitado. Exemplo: http://prntscr.com/odb8af
+    item: "&e{player}&7 está vendendo um item na categoria de &e{cat}&7 por &e{price}&7."
+    chest: "&e{player}&7 está vendendo um baú de itens com &e{amount}&7 itens por &e{price}&7."
+  action-bar:
+    enable: true #aparecer na action bar -> http://prntscr.com/odcxwo
+    item: "&e{player}&7 está vendendo um item na categoria de &e{cat}&7 por &e{price}&7."
+    chest: "&e{player}&7 está vendendo um baú de itens com &e{amount}&7 itens por &e{price}&7."
+
+categories:
+  weapons: # esse nome aqui aparecerá no menu e em "cat" no broadcast-sell: http://prntscr.com/odb8xw
+    slot: 13
+    icon: 276
+    name: '&eEspadas'
+    items: [268, 272, 267, 283, 276] #
+    lore:
+      - ""
+      - ""
+      - "&e{amount} &7itens disponiveis."
+  Armaduras:
+    slot: 14
+    icon: 311
+    name: '&eArmaduras'
+    items: [298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317]
+    enchant: true
+    lore:
+      - ""
+      - ""
+      - "&e{amount} &7itens disponiveis."
+  potions:
+    slot: 12
+    icon: '373:8229'
+    name: '&ePoções'
+    items: [373, 322, 384]
+    lore:
+      - ""
+      - ""
+      - "&e{amount} &7itens disponiveis."
+  misc:
+    slot: 22
+    icon: 280
+    name: "&eMiscelânia"
+    items: [280, 403]
+    lore:
+      - "&7Items gerais e baús."
+      - ""
+      - "&e{amount} &7itens disponiveis."
+
+help:
+  - "&a/mercado ver &7Mostra os itens disponíveis a venda."
+  - "&a/mercado vender [preço] &7Bota a venda o item em sua mão."
+  - "&a/mercado coletar &7Coletar seus itens expirados."
+sell:
+  no-price: "&cInsira um preço para vender."
+  invalid: "&cInsira um valor válido para vender." # se for menor que 1 ou maior que 9000000000000000000
+  #no-item: "&cSegure um item para vende-lo ou utilize &4/mercado vender [preço] bau&c para vender um baú de itens."
+  no-item: "&cSegure um item para vende-lo."
+  invalid-item: "&cEste item não se encontra em nenhuma categoria válida."
+  limit-expired: "&cVocê possui muitos itens expirados. Colete alguns para vender." # caso tenha 36 itens expirados
+  limit: "&cVocê atingiu seu limite de itens à serem vendidos ao mesmo tempo." # caso tenha 36 itens expirados
+  no-perm: "&cVocê não possui permissao para vender." # desabilite a permissao usando limite 0: raplex.mercado.limit.0
+  added: "&aItem adicionado ao mercado com sucesso por 24 horas."
+  chest:
+    title: "Selecione os itens"
+    confirm:
+      name: "&aConfirmar"
+      lore:
+        - "&7Clique para vender estes itens."
+    cancel:
+      name: "&cCancelar"
+      lore:
+        - "&7Clique para cancelar e os itens serao dropados no chão."
+    chest:
+      name: "&eBaú de itens"
+      lore:
+        - "&7Arraste os itens para os espaços acima para"
+        - "&7vende-los todos em um baú por &e{price}&7."
+item:
+  can-buy: "&a"
+  cant-buy: "&c"
+  item:
+    buy-lore: # esse lore vai ser adicionado caso o item ja tenha outro lore
+      - ""
+      - "&e* Item à venda"
+      - "&7Vendedor: &e{player}"
+      - "&7Preço: &p{price}"
+      - ""
+      - "&7Clique esquerdo > comprar"
+    collect-lore: # esse lore vai ser adicionado caso o item ja tenha outro lore
+      - ""
+      - "&e * Seu item"
+      - "&7Preço: &p{price}"
+      - ""
+      - "&7Clique esquerdo > coletar"
+  chest:
+    name: "&aBaú de itens"
+    buy-lore:
+      - ""
+      - "&e* Item à venda"
+      - "&7Numero de itens: &e{amount}"
+      - "&7Vendedor: &e{player}"
+      - "&7Preço: &p{price}"
+      - ""
+      - "&7Clique esquerdo > ver items"
+    collect-lore:
+      - "&e * Seu baú"
+      - "&7Numero de itens: &e{amount}"
+      - "&7Preço: &e{price}"
+      - ""
+      - "&7Clique esquerdo > ver itens"
+      - "&7Clique direito > coletar itens"
+    chest-item: #item que vai dar ao comprar bau
+      name: "&eBaú de itens"
+      lore:
+        - ""
+        - "&e* Informações"
+        - "&7Baú comprado de: &e{player}"
+        - "&7Quantidade de itens: &e{amount}"
+        - ""
+        - "&7Coloque no chao para pegar os itens."
+
+  collect-chest:
+    name: "&eColetar"
+    lore:
+      - "&e{amount} &7item para coletar." # 1 item
+    lore-plural:
+      - "&e{amount} &7itens para coletar." # + de 1 item
+    lore-none:
+      - "&7Nenhum item para coletar." # 0 item
+  back:
+    name: "&eVoltar"
+    lore:
+      - "&7Clique para voltar."
+view:
+  title: "Mercado"
+  rows: 4 #Numero de linhas do GUI
+  show-numbers: true #se mostra a quantidade de itens disponíveis na quantidade do item. se tiver + de 64 itens ele mostra 64
+  collect-slot: 35
+  invalid-id: "&cID de item inválido. Talvez este item ja foi comprado por outra pessoa." # ao usar /mercado ver <id> e tiver id errado. Esse comando é usado ao clicar na msg de broadcast
+  cant-see-own: "&cEste item é seu. Utilize &4/mercado coletar&c para coletar." #ao usar /mercado ver <id> (o de cima) no proprio item
+  expired: "&cEste item está expirado." # -> https://i.imgur.com/zJeennK.gifv
+category:
+  title: "{name} - #{page}"
+  page:
+    back:
+      name: "&eVoltar"
+      lore:
+        - "&7Clique para voltar uma página."
+    next:
+      name: "&eAvançar"
+      lore:
+        - "&7Clique para avançar uma página."
+  refresh:
+    name: "&eAtualizar"
+    lore:
+      - "&7Clique para atualizar os itens."
+confirm: # para confirmação de item e bau
+  title: "Confirmar"
+  rows: 3 #Numero de linhas do GUI
+  cancel-slots: [9, 10, 11] #apenas para item
+  confirm-slots: [15, 16, 17] #apenas para item
+  preview-slot: 13 #apenas para item
+
+  confirm:
+    name: "&aConfirmar"
+    lore:
+      - "&7Clique para confirmar a compra."
   cancel:
     name: "&cCancelar"
     lore:
-      - "&7Clique para cancelar"
-  confirm:
-    can-buy-color: '&a' # cor caso o cara tenha dinheiro para comprar
-    cant-buy-color: '&c' # caso não tenha
-    can-sell-color: '&a' # cor caso o cara tenha dinheiro para comprar
-    cant-sell-color: '&c' # caso não tenha
-    # O '&p' sera substituidp para "can-buy-color" caso ele tenha dinheiro para comprar
-    # se não tiver, sera o cant-buy-color
-    # e caso esteja vendendo, sera sell-color
-    buy:
-      1:
-        name: "&aComprar x1"
-        lore:
-          - "&7Clique para comprar uma"
-          - "&7unidade por &p${buy}"
-        lore-vip:
-          - "&7Clique para comprar uma"
-          - "&7unidade por &c&m${buy} &p${buy-vip}"
-          - "&e* Preço VIP"
-      64:
-        name: "&aComprar x64"
-        lore:
-          - "&7Clique para comprar 64"
-          - "&7unidades por &p${buy}"
-        lore-vip:
-          - "&7Clique para comprar 64"
-          - "&7unidades por &c&m${buy} &p${buy-vip}"
-          - "&e* Preço VIP"
-      2304:
-        name: "&aComprar x2304"
-        lore:
-          - "&7Clique para comprar 2304"
-          - "&7unidades por &p${buy}"
-        lore-vip:
-          - "&7Clique para comprar 2304"
-          - "&7unidade por &c&m${buy} &p${buy-vip}"
-          - "&e* Preço VIP"
-    sell:
-      1:
-        name: "&aVender x1"
-        lore:
-          - "&7Clique para vender uma"
-          - "&7unidade por &p${sell}"
-        lore-vip:
-          - "&7Clique para vender uma"
-          - "&7unidade por &c&m${sell} &p${sell-vip}"
-          - "&e* Preço VIP"
-      64:
-        name: "&aVender x64"
-        lore:
-          - "&7Clique para vender 64"
-          - "&7unidades por &p${sell}"
-        lore-vip:
-          - "&7Clique para vender 64"
-          - "&7unidades por &c&m${sell} &p${sell-vip}"
-          - "&e* Preço VIP"
-      2304:
-        name: "&aVender x2304"
-        lore:
-          - "&7Clique para vender 2304"
-          - "&7unidades por &p${sell}"
-        lore-vip:
-          - "&7Clique para vender 2304"
-          - "&7unidades por &c&m${sell} &p${sell-vip}"
-          - "&e* Preço VIP"
-  back-item-name: "&eVoltar"
-  no-money: "&cVocê não possúi saldo suficiente."
-  success-buy: "&aVocê comprou &2{amount}&a por &2${buy}&a com sucesso."
-  success-sell: "&aVocê vendeu &2{amount}&a por &2${sell}&a com sucesso."
-  no-space-buy: "&cVocê não possúi espaço no inventário."
-  no-items: "&cVocê não possui a quantidade necessária de items para vender."
-  cant-sell: "&cNão é possível vender este item."
-  error: "&cOcorreu um erro na transação. Contate um administrador ou tente novamente mais tarde."
-item-format:
-  name: "&6{name}" # nome da categoria
-  lore:
-    - " "
-    - "&7Botão esquerdo > Comprar"
-    - "&7Botão direito > Vender"
-    - ""
-    - "&e* Informações"
-    - "&7Compre a unidade por: &e${buy}"
-    - "&7Venda a unidade por: &e${sell}"
-    - ""
-    - "&e* Custo para &cVIPs"
-    - "&7Compre a unidade por: &e${buy-vip}"
-    - "&7Venda a unidade por: &e${sell-vip}"
-    - ""
-    - "&aClique para comprar/vender!"
-  lore-cant-sell:
-    - ""
-    - "&7Botão esquerdo > Comprar"
-    - ""
-    - "&e* Informações"
-    - "&7Compre a unidade por: &e${buy}"
-    - ""
-    - "&e* Custo para &cVIPs"
-    - "&7Compre a unidade por: &e${buy-vip}"
-    - ""
-    - "&aClique para comprar!"
-categories:
-  blocks:
-    name: "Blocos"
-    display-item: GRASS
-    # LISTA DE MATERIAIS: http://docs.codelanx.com/Bukkit/1.8/org/bukkit/Material.html
-    items:
-      0:
-        material: GRASS
-        sell: 80
-        buy: 100
-      1:
-        material: STONE
-        sell: 70
-        buy: 90
-      qualquercoisa:
-        material: STONE
-        data: 2
-        name: "&6granitao"
-        sell: 100
-        buy: 240
-      wat:
-        material: ICE
-        name: "&9água"
-        buy: 20
-        sell: 900
-      test:
-        material: STAINED_CLAY
-        data: 5
-        give-item: false # se for dar o item ou n
-        can-sell: false # se n poder vender
-        name: "&5Spawner de monstro"
-        buy: 20
-        sell: 200 # Se o item não tiver como vender, bote o sell ainda com qualquer valor p/ n bugar
-        console-commands:
-          - 'tellraw {player} {"text":"Spawner ae de {amount} mob pra tu {player}","color":"gold"}'
-        lore: # esse lore vai ser juntado antes do lore normal
-          - "&7Spawner de &ezumbi"
+      - "&7Clique para cancelar a compra."
+buy:
+  already: "&cEste item não existe mais. Alguem já deve te-lo comprado."
+  expired: "&cEste item está expirado."
+  money: "&cVocê não possui dinheiro suficiente."
+  success: "&aItem comprado com sucesso."
+  space: "Você não possúi espaço disponivel no inventario. Dropando no chão"
+  broadcast:
+    everyone: # mensagem pra todo mundo
+      enable: true #ativar
+      msg: "&e{player}&7 comprou um item de &e{seller}&7 por &e{price}&7."
+    seller: #msg pro vendedor
+      enable: true
+      exclusive: true # se ativar, o vendedor vai receber somente a msg a baixo, se estiver desativado, o vendedor recebera a msg a baixo(se seller.enable estievr habilitado) e a do everyone(se estievr ativaado tb)
+      msg: "&e{player}&7 comprou um item seu por &e{price}&7."
+collect:
+  title: "Coletar itens"
+  no-space: "&cSem espaço disponivel no inventario."

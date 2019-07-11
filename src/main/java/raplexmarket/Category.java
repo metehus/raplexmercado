@@ -53,8 +53,25 @@ public class Category {
         return marketItems;
     }
 
-    public void addMarketItem(MarketItem marketItem) {
+    public List<MarketItem> getMarketItems(boolean showExpired) {
+        List<MarketItem> mi = new ArrayList<>();
+        for (MarketItem marketItem : marketItems) {
+            if (!marketItem.isExpired()) mi.add(marketItem);
+        }
+        return showExpired ? marketItems : mi;
+    }
+
+    public void addMarketItem(MarketItem marketItem, boolean addMain) {
         marketItems.add(marketItem);
+        if (addMain) RaplexMarket.getInstance().addMarketItem(marketItem.getItemId(), marketItem);
+    }
+
+    public void removeMarketItem(MarketItem marketItem) {
+        marketItems.remove(marketItem);
+    }
+
+    public void addMarketItem(MarketItem marketItem) {
+        addMarketItem(marketItem, false);
     }
 
     public Material getIconMaterial() {
@@ -73,13 +90,13 @@ public class Category {
 
     public ItemStack getIcon() {
         boolean showNumber = RaplexMarket.getInstance().getConfig().getBoolean("view.show-numbers");
-        int am = getMarketItems().size() >= 64 ? 64 : getMarketItems().size();
+        int am = getMarketItems(false).size() >= 64 ? 64 : getMarketItems(false).size();
         ItemStack icon = new ItemStack(getIconMaterial(), showNumber ? am : 1, getIconItemDamage());
         ItemMeta meta = icon.getItemMeta();
         meta.setDisplayName(getDisplayName());
         List<String> lore = new ArrayList<>();
         getLore().forEach(l -> {
-            lore.add(l.replace("{amount}", Integer.toString(getMarketItems().size())));
+            lore.add(l.replace("{amount}", Integer.toString(getMarketItems(false).size())));
         });
         meta.setLore(lore);
         if (isEnchant()) {
@@ -87,6 +104,7 @@ public class Category {
         }
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         icon.setItemMeta(meta);
 
         return icon;

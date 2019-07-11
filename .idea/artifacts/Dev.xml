@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Dev">
+    <output-path>$USER_HOME$/Documents/Projects/Plugins/Server/1.8/plugins</output-path>
+    <root id="archive" name="RaplexMarket.jar">
+      <element id="module-output" name="RaplexMarket.main" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/config.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/plugin.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/database.json" />
+    </root>
+  </artifact>
+</component>

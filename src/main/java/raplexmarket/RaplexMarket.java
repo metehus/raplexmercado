@@ -1,7 +1,5 @@
 package raplexmarket;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,15 +12,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import raplexmarket.commands.MarketCommand;
+import raplexmarket.listeners.BlockPlace;
 import raplexmarket.listeners.InventoryClick;
+import raplexmarket.listeners.InventoryClose;
 import raplexmarket.util.ConfigUtils;
 import raplexmarket.util.ItemSerialization;
-import raplexmarket.util.PageManager;
+import raplexmarket.util.PlayerSelectionManager;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class RaplexMarket extends JavaPlugin {
@@ -30,10 +27,11 @@ public class RaplexMarket extends JavaPlugin {
     private static RaplexMarket instance;
     private Economy economy;
     private File database;
-    private List<MarketItem> marketItems = new ArrayList<>();
+    private HashMap<UUID, MarketItem> marketItems = new HashMap<>();
+    private HashMap<UUID, MarketChest> chests = new HashMap<>();
     private HashMap<String, Category> categories = new HashMap<>();
     private ConfigUtils configUtils;
-    private PageManager pageManager = new PageManager();
+    private PlayerSelectionManager playerSelectionManager = new PlayerSelectionManager();
     public static final String guiC = ChatColor.translateAlternateColorCodes('&', "&d&1");
 
 
@@ -54,8 +52,56 @@ public class RaplexMarket extends JavaPlugin {
         }
 
         Bukkit.getPluginManager().registerEvents(new InventoryClick(this), this);
+        //Bukkit.getPluginManager().registerEvents(new BlockPlace(this), this);
+        Bukkit.getPluginManager().registerEvents(new InventoryClose(this), this);
 
         getCommand("market").setExecutor(new MarketCommand(this));
+    }
+
+    @Override
+    public void onDisable() {
+        JSONObject file = new JSONObject();
+        JSONArray bids = new JSONArray();
+        JSONArray chestsArray = new JSONArray();
+        for (MarketItem item : marketItems.values()) {
+            item.setExpired(true);
+            JSONObject itemObj = new JSONObject();
+            itemObj.put("id", item.getItemId().toString());
+            itemObj.put("from", item.getOwner().getUniqueId().toString());
+            itemObj.put("price", item.getPrice());
+            itemObj.put("started", item.getStarted().getTime());
+            itemObj.put("expired", item.isExpired());
+            itemObj.put("category", item.getCategory().getName());
+            JSONArray items = new JSONArray();
+            for (ItemStack i : item.getItems()) {
+                items.add(ItemSerialization.serializeItem(i));
+            }
+            itemObj.put("items", items);
+            bids.add(itemObj);
+        }
+
+//        getChests().forEach(((uuid, c) -> {
+//            JSONObject chest = new JSONObject();
+//            chest.put("id", uuid.toString());
+//            JSONArray items = new JSONArray();
+//            for (ItemStack i : c.getItems()) {
+//                items.add(ItemSerialization.serializeItem(i));
+//            }
+//            chest.put("items", items);
+//            chestsArray.add(chest);
+//        }));
+
+        file.put("bids", bids);
+        file.put("chests", chestsArray);
+        try {
+            FileWriter fw = new FileWriter(database);
+            fw.write(file.toJSONString());
+            fw.flush();
+            fw.close();
+        } catch (IOException e) {
+            getLogger().severe(ChatColor.DARK_RED + "Failed to save database");
+            e.printStackTrace();
+        }
     }
 
     public boolean setupEconomy() {
@@ -81,23 +127,44 @@ public class RaplexMarket extends JavaPlugin {
             bids.forEach(b -> {
                 try {
                     JSONObject bid = (JSONObject) b;
-                    UUID id = UUID.fromString((String) bid.get("from"));
+                    UUID id = UUID.fromString((String) bid.get("id"));
+                    UUID player = UUID.fromString((String) bid.get("from"));
                     long price = (long) bid.get("price");
                     long date = (long) bid.get("started");
+                    boolean expired = (boolean) bid.get("expired");
                     List<ItemStack> itemStacks = new ArrayList<>();
                     JSONArray items = (JSONArray) bid.get("items");
                     items.forEach(i -> {
-                        itemStacks.add(ItemSerialization.deserializeItem((JSONObject) i));
+                        itemStacks.add(ItemSerialization.deserializeItem((String) i));
                     });
                     Category cat = categories.get((String) bid.get("category"));
 
-                    MarketItem mi = new MarketItem(id, ((Long) price).intValue(), date, cat, itemStacks);
+                    if (getConfig().getBoolean("debug-log"))
+                        getLogger().info("Setted item " + id);
+
+                    MarketItem mi = new MarketItem(player, ((Long) price).intValue(), date, expired, cat, itemStacks, id);
                     cat.addMarketItem(mi);
-                    marketItems.add(mi);
+                    marketItems.put(id, mi);
                 } catch (Exception e) {
                     getLogger().severe("Market database error: " + e);
                 }
             });
+
+            JSONArray chestsOB = (JSONArray) jsonObject.get("chests");
+
+            chestsOB.forEach(c -> {
+                JSONObject ches = (JSONObject) c;
+                UUID id = UUID.fromString((String) ches.get("id"));
+                List<ItemStack> itemStacks = new ArrayList<>();
+                JSONArray items = (JSONArray) ches.get("items");
+                items.forEach(i -> {
+                    itemStacks.add(ItemSerialization.deserializeItem((String) i));
+                });
+
+                MarketChest chest = new MarketChest(id, itemStacks);
+                addChest(chest);
+            });
+
             getLogger().info("Database items successfully setted up.");
 
             return true;
@@ -135,16 +202,45 @@ public class RaplexMarket extends JavaPlugin {
         return database;
     }
 
-    public List<MarketItem> getMarketItems() {
+    public HashMap<UUID, MarketItem> getMarketItems() {
         return marketItems;
     }
 
-    public PageManager getPageManager() {
-        return pageManager;
+    public List<MarketItem> getMarketItemsList() {
+        List<MarketItem> list = new ArrayList(getMarketItems().values());
+        return list;
+    }
+
+    public MarketItem getMarketItem(UUID id) {
+        return marketItems.get(id);
+    }
+
+    public void addMarketItem(UUID id, MarketItem marketItem) {
+        marketItems.put(id, marketItem);
+    }
+
+    public void removeMarketItem(MarketItem marketItem) {
+        marketItems.remove(marketItem.getItemId());
+    }
+
+    public PlayerSelectionManager getPlayerSelectionManager() {
+        return playerSelectionManager;
     }
 
     public HashMap<String, Category> getCategories() {
         return categories;
+    }
+
+    public HashMap<UUID, MarketChest> getChests() {
+        return chests;
+    }
+
+    public void addChest(MarketChest chest) {
+        chests.put(chest.getUUID(), chest);
+    }
+
+    public void removeChest(UUID uuid) {
+        chests.remove(uuid);
     }
 
     public static RaplexMarket getInstance() {
